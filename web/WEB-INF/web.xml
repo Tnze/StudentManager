@@ -3,4 +3,28 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <filter>
+        <filter-name>Login</filter-name>
+        <filter-class>LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Login</filter-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>SignUp</servlet-name>
+        <servlet-class>SignUpServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SignUp</servlet-name>
+        <url-pattern>/signup</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -6,15 +6,11 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%
-    if (!"login".equals(session.getAttribute("status")))
-        response.sendRedirect("login.jsp");
-%>
 <html>
 <head>
     <title>学生信息管理系统</title>
 </head>
 <body>
-
+欢迎你：<%= session.getAttribute("Username") %>
 </body>
 </html>

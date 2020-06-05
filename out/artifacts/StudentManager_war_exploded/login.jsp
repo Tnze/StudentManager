@@ -5,14 +5,8 @@
   Time: 上午 12:56
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    if (request.getMethod().equals("POST")) {
-        String user = request.getParameter("user");
-        String pswd = request.getParameter("pswd");
-        response.setContentType("application/json");
-    } else {
-%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<% if (session.getAttribute("ID") != null) response.sendRedirect("index.jsp"); %>
 <html>
 <head>
     <title>登录-学生信息管理系统</title>
@@ -26,27 +20,61 @@
     </style>
 </head>
 <body>
+<script type="text/x-template" id="sign-in-template">
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span>登录系统</span>
+            <el-button
+                    style="float: right; padding: 3px 0" type="text"
+                    v-on:click="$emit('click_switch')">注册
+            </el-button>
+        </div>
+        <transition name="el-fade-in">
+            <el-alert v-show="fail_msg" :title="fail_msg" type="error"
+                      @close="close_alert" center show-icon></el-alert>
+        </transition>
+        <el-form ref="form" :rules="rules" :model="login_data">
+            <el-form-item prop="username">
+                <el-input v-model="login_data.username" placeholder="用户名"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+                <el-input v-model="login_data.password" placeholder="密码" show-password></el-input>
+            </el-form-item>
+            <el-button type="primary" @click="sign_in">登入</el-button>
+        </el-form>
+    </el-card>
+</script>
+<script type="text/x-template" id="sign-up-template">
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span>注册账号</span>
+            <el-button
+                    style="float: right; padding: 3px 0" type="text"
+                    v-on:click="$emit('click_switch')">登录
+            </el-button>
+        </div>
+        <transition name="el-fade-in">
+            <el-alert v-show="fail_msg" :title="fail_msg" type="error"
+                      @close="close_alert" center show-icon></el-alert>
+        </transition>
+        <el-form ref="form" :rules="rules" :model="login_data">
+            <el-form-item prop="username">
+                <el-input v-model="login_data.username" placeholder="用户名"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+                <el-input v-model="login_data.password" placeholder="密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item prop="re-password">
+                <el-input v-model="login_data.re_password" placeholder="再次输入密码" show-password></el-input>
+            </el-form-item>
+            <el-button type="primary" @click="sign_up">注册</el-button>
+        </el-form>
+    </el-card>
+</script>
 <div id="app">
     <el-row type="flex" justify="center" align="middle">
         <el-col :xs="22" :sm="8" :md="6">
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>登录系统</span>
-                </div>
-                <el-form ref="form" :rules="rules" :model="login_data">
-                    <el-form-item prop="username">
-                        <el-input v-model="login_data.username" placeholder="用户名"></el-input>
-                    </el-form-item>
-                    <el-form-item prop="password">
-                        <el-input v-model="login_data.password" placeholder="密码" show-password></el-input>
-                    </el-form-item>
-                    <el-button type="primary" @click="login">登入</el-button>
-                    <transition name="el-fade-in">
-                        <el-alert v-show="login_fail" :title="login_fail" type="error"
-                                  @close="close_alert" center show-icon></el-alert>
-                    </transition>
-                </el-form>
-            </el-card>
+            <component v-bind:is="current_tab" @click_switch="click_switch"></component>
         </el-col>
     </el-row>
 </div>
@@ -54,39 +82,82 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-    let vm = new Vue({
-        el: '#app',
-        data: {
-            login_data: {
-                username: '',
-                password: '',
-            },
-            login_fail: '',
-            rules: {
-                username: [{required: true, message: '请输入用户名'}],
-                password: [{required: true, message: '请输入密码'}]
+    Vue.component('sign-in-card', {
+        template: '#sign-in-template',
+        data: function () {
+            return {
+                fail_msg: '',
+                login_data: {
+                    username: '',
+                    password: '',
+                },
+                rules: {
+                    username: [{required: true, message: '请输入用户名'}],
+                    password: [{required: true, message: '请输入密码'}]
+                }
             }
         },
         methods: {
-            login: function () {
-                let login_form = new FormData();
+            sign_in: function () {
+                let login_form = new URLSearchParams();
                 login_form.append('user', this.login_data.username)
                 login_form.append('pswd', this.login_data.password)
-                axios.post('', login_form
-                ).then(function (resp) {
-                    if (resp.status === 200) window.location = '/';
-                    else vm.login_fail = '登录失败';
-                }).catch(function (error) {
-                    vm.login_fail = '登录失败';
+                axios.post('login', login_form).then((resp) => {
+                    if (resp.status === 204) window.location = 'index.jsp';
+                    else this.fail_msg = '登录失败';
+                }).catch((error) => {
+                    this.fail_msg = error.response ? error.response.data : '登录失败';
                 })
             },
-
             close_alert: function () {
-                this.login_fail = '';
+                this.fail_msg = '';
+            }
+        }
+    })
+    Vue.component('sign-up-card', {
+        template: '#sign-up-template',
+        data: function () {
+            return {
+                fail_msg: '',
+                login_data: {
+                    username: '',
+                    password: '',
+                    re_password: ''
+                },
+                rules: {
+                    username: [{required: true, message: '请输入用户名'}],
+                    password: [{required: true, message: '请输入密码'}]
+                }
+            }
+        },
+        methods: {
+            sign_up: function () {
+                let login_form = new URLSearchParams();
+                login_form.append('user', this.login_data.username)
+                login_form.append('pswd', this.login_data.password)
+                axios.post('login', login_form).then((resp) => {
+                    if (resp.status === 204) window.location = 'index.jsp';
+                    else this.fail_msg = '登录失败';
+                }).catch((error) => {
+                    this.fail_msg = error.response ? error.response.data : '登录失败';
+                })
+            },
+            close_alert: function () {
+                this.fail_msg = '';
+            }
+        }
+    })
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            current_tab: "sign-in-card"
+        },
+        methods: {
+            click_switch: function () {
+                this.current_tab = this.current_tab === 'sign-in-card' ? 'sign-up-card' : 'sign-in-card'
             }
         }
     })
 </script>
 </body>
 </html>
-<% } %>
