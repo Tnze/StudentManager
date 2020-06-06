@@ -1,10 +1,20 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="slot-scope" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="17">
+          <list size="28">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -22,6 +32,17 @@
             <item index="14" class="java.lang.String" itemvalue="el-alert" />
             <item index="15" class="java.lang.String" itemvalue="sign-in-card" />
             <item index="16" class="java.lang.String" itemvalue="component" />
+            <item index="17" class="java.lang.String" itemvalue="keep-alive" />
+            <item index="18" class="java.lang.String" itemvalue="el-collapse-transition" />
+            <item index="19" class="java.lang.String" itemvalue="el-header" />
+            <item index="20" class="java.lang.String" itemvalue="el-main" />
+            <item index="21" class="java.lang.String" itemvalue="el-container" />
+            <item index="22" class="java.lang.String" itemvalue="el-dropdown-menu" />
+            <item index="23" class="java.lang.String" itemvalue="el-dropdown-item" />
+            <item index="24" class="java.lang.String" itemvalue="el-dropdown" />
+            <item index="25" class="java.lang.String" itemvalue="el-table" />
+            <item index="26" class="java.lang.String" itemvalue="el-table-column" />
+            <item index="27" class="java.lang.String" itemvalue="el-dialog" />
           </list>
         </value>
       </option>

@@ -38,7 +38,7 @@ public class Account {
         throw new AccountException("账号或密码错误");
     }
 
-    public static void reset(String user, String password) throws NoSuchAlgorithmException, NamingException, SQLException, InvalidKeyException {
+    public static void reset(int user, String password) throws NoSuchAlgorithmException, NamingException, SQLException, InvalidKeyException {
         // Generate new password salt.
         byte[] key = new byte[512];
         new SecureRandom().nextBytes(key);
@@ -47,10 +47,10 @@ public class Account {
         Context c = new InitialContext();
         DataSource ds = (DataSource) c.lookup("java:comp/env/jdbc/students");
         try (Connection conn = ds.getConnection()) {
-            try (PreparedStatement stmt = conn.prepareStatement("UPDATE users SET Pswd = ?,PswdKey = ? WHERE User = ?")) {
+            try (PreparedStatement stmt = conn.prepareStatement("UPDATE users SET Pswd = ?,PswdKey = ? WHERE ID = ?")) {
                 stmt.setBlob(1, new ByteArrayInputStream(pswd));
                 stmt.setBlob(2, new ByteArrayInputStream(key));
-                stmt.setString(3, user);
+                stmt.setInt(3, user);
                 stmt.executeUpdate();
             }
         }

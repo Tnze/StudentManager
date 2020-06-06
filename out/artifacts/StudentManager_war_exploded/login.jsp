@@ -11,6 +11,7 @@
 <head>
     <title>登录-学生信息管理系统</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
         html, body, #app, .el-row {
@@ -57,15 +58,15 @@
             <el-alert v-show="fail_msg" :title="fail_msg" type="error"
                       @close="close_alert" center show-icon></el-alert>
         </transition>
-        <el-form ref="form" :rules="rules" :model="login_data">
+        <el-form ref="form" :rules="rules" :model="signup_data">
             <el-form-item prop="username">
-                <el-input v-model="login_data.username" placeholder="用户名"></el-input>
+                <el-input v-model="signup_data.username" placeholder="用户名"></el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <el-input v-model="login_data.password" placeholder="密码" show-password></el-input>
+                <el-input v-model="signup_data.password" placeholder="密码" show-password></el-input>
             </el-form-item>
-            <el-form-item prop="re-password">
-                <el-input v-model="login_data.re_password" placeholder="再次输入密码" show-password></el-input>
+            <el-form-item prop="re_password">
+                <el-input v-model="signup_data.re_password" placeholder="再次输入密码" show-password></el-input>
             </el-form-item>
             <el-button type="primary" @click="sign_up">注册</el-button>
         </el-form>
@@ -73,8 +74,12 @@
 </script>
 <div id="app">
     <el-row type="flex" justify="center" align="middle">
-        <el-col :xs="22" :sm="8" :md="6">
-            <component v-bind:is="current_tab" @click_switch="click_switch"></component>
+        <el-col :xs="22" :sm="12" :md="6">
+            <el-collapse-transition>
+                <keep-alive>
+                    <component v-bind:is="current_tab" @click_switch="click_switch"></component>
+                </keep-alive>
+            </el-collapse-transition>
         </el-col>
     </el-row>
 </div>
@@ -99,15 +104,18 @@
         },
         methods: {
             sign_in: function () {
-                let login_form = new URLSearchParams();
-                login_form.append('user', this.login_data.username)
-                login_form.append('pswd', this.login_data.password)
-                axios.post('login', login_form).then((resp) => {
-                    if (resp.status === 204) window.location = 'index.jsp';
-                    else this.fail_msg = '登录失败';
-                }).catch((error) => {
-                    this.fail_msg = error.response ? error.response.data : '登录失败';
-                })
+                this.$refs.form.validate((ok, faild) => {
+                    if (!ok) return;
+                    let login_form = new URLSearchParams();
+                    login_form.append('user', this.login_data.username)
+                    login_form.append('pswd', this.login_data.password)
+                    axios.post('login', login_form).then((resp) => {
+                        if (resp.status === 204) window.location = 'index.jsp';
+                        else this.fail_msg = '登录失败';
+                    }).catch((error) => {
+                        this.fail_msg = error.response ? error.response.data : '登录失败';
+                    })
+                });
             },
             close_alert: function () {
                 this.fail_msg = '';
@@ -117,30 +125,42 @@
     Vue.component('sign-up-card', {
         template: '#sign-up-template',
         data: function () {
+            let validPswd2 = (rule, value, callback) => {
+                if (this.signup_data.password !== value)
+                    callback(new Error('两次输入密码不一致！'));
+                else callback();
+            };
             return {
                 fail_msg: '',
-                login_data: {
+                signup_data: {
                     username: '',
                     password: '',
                     re_password: ''
                 },
                 rules: {
                     username: [{required: true, message: '请输入用户名'}],
-                    password: [{required: true, message: '请输入密码'}]
+                    password: [{required: true, message: '请输入密码'}],
+                    re_password: [
+                        {required: true, message: '请再次输入密码'},
+                        {validator: validPswd2, trigger: 'blur'}
+                    ]
                 }
             }
         },
         methods: {
             sign_up: function () {
-                let login_form = new URLSearchParams();
-                login_form.append('user', this.login_data.username)
-                login_form.append('pswd', this.login_data.password)
-                axios.post('login', login_form).then((resp) => {
-                    if (resp.status === 204) window.location = 'index.jsp';
-                    else this.fail_msg = '登录失败';
-                }).catch((error) => {
-                    this.fail_msg = error.response ? error.response.data : '登录失败';
-                })
+                this.$refs.form.validate((ok, faild) => {
+                    if (!ok) return;
+                    let login_form = new URLSearchParams();
+                    login_form.append('user', this.signup_data.username)
+                    login_form.append('pswd', this.signup_data.password)
+                    axios.post('signup', login_form).then((resp) => {
+                        if (resp.status === 204) window.location = 'index.jsp';
+                        else this.fail_msg = '登录失败';
+                    }).catch((error) => {
+                        this.fail_msg = error.response ? error.response.data : '登录失败';
+                    })
+                });
             },
             close_alert: function () {
                 this.fail_msg = '';

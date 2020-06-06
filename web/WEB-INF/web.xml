@@ -20,6 +20,22 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>ChangePswd</servlet-name>
+        <servlet-class>ResetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChangePswd</servlet-name>
+        <url-pattern>/change_pswd</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>SignUp</servlet-name>
         <servlet-class>SignUpServlet</servlet-class>
     </servlet>

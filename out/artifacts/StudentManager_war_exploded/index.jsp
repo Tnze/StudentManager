@@ -9,8 +9,201 @@
 <html>
 <head>
     <title>学生信息管理系统</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        html, body, #app, .el-row {
+            height: 100%;
+            margin: 0;
+        }
+
+        .el-header, .el-footer {
+            color: #333;
+            line-height: 60px;
+            border-bottom: 1px solid #dcdfe6;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+
+        .student-item-expand {
+            font-size: 0;
+        }
+
+        .student-item-expand label {
+            width: 90px;
+            color: #99a9bf;
+        }
+
+        .student-item-expand .el-form-item {
+            margin-right: 0;
+            margin-bottom: 0;
+            width: 50%;
+        }
+    </style>
 </head>
 <body>
-欢迎你：<%= session.getAttribute("Username") %>
+<div id="app">
+    <el-dialog
+            title="修改密码"
+            :visible.sync="change_password_visible">
+        <el-form ref="change_password_form" :model="change_password_form" :rules="change_password_form_rules">
+            <el-form-item prop="password">
+                <el-input v-model="change_password_form.password" placeholder="旧密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item prop="new_password">
+                <el-input v-model="change_password_form.new_password" placeholder="新密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item prop="check_new_password">
+                <el-input v-model="change_password_form.check_new_password" placeholder="再次输入新密码"
+                          show-password></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+    		<el-button @click="change_password_visible = false">取 消</el-button>
+    		<el-button type="primary" @click="change_password">确 定</el-button>
+  		</span>
+    </el-dialog>
+    <el-container>
+        <el-header style="text-align: right">
+            <span style="float: left; font-size: 20px;">学生信息管理系统</span>
+
+            <el-dropdown @command="account_profile">
+                <span><%= session.getAttribute("Username") %>
+                <i class="el-icon-caret-bottom" style="margin-right: 15px"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="change-password">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="sign-out">注销</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+
+        </el-header>
+        <el-main>
+            <el-row :gutter="10">
+                <el-col>
+                    <el-table :data="tableData" style="width: 100%">
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="left" inline class="student-item-expand">
+                                    <el-form-item label="学号">
+                                        <span>{{ props.row.id }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="姓名">
+                                        <span>{{ props.row.name }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="性别">
+                                        <span>{{ props.row.gender }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="出生日期">
+                                        <span>{{ props.row.birthday }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="住址">
+                                        <span>{{ props.row.address }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="QQ">
+                                        <span>{{ props.row.qq }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="手机">
+                                        <span>{{ props.row.phone }}</span>
+                                    </el-form-item>
+                                </el-form>
+                                <el-button size="mini">Edit
+                                </el-button>
+                                <el-button size="mini" type="danger">Delete
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                prop="id"
+                                label="学号">
+                        </el-table-column>
+                        <el-table-column
+                                prop="name"
+                                label="姓名">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gender"
+                                label="性别">
+                        </el-table-column>
+                    </el-table>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    let vm = new Vue({
+        el: '#app',
+        data: function () {
+            let validPswd2 = (rule, value, callback) => {
+                if (this.change_password_form.new_password !== value)
+                    callback(new Error('两次输入密码不一致！'));
+                else callback();
+            };
+            return {
+                tableData: [{
+                    id: '12987123',
+                    name: 'Tnze',
+                    gender: '男',
+                    birthday: '2000年11月13日',
+                    address: '北京市东城区东华门街道劳动人民文化宫',
+                    qq: '1234567890',
+                    phone: '0123456789'
+                }],
+                change_password_form: {
+                    password: '',
+                    new_password: '',
+                    check_new_password: ''
+                },
+                change_password_form_rules: {
+                    password: [{required: true, message: '请输入旧密码'}],
+                    new_password: [{required: true, message: '请输入新密码'}],
+                    check_new_password: [
+                        {required: true, message: '请再次输入新密码'},
+                        {validator: validPswd2, trigger: 'blur'}
+                    ]
+                },
+                change_password_visible: false
+            }
+        },
+        methods: {
+            account_profile: function (cmd) {
+                switch (cmd) {
+                    case 'change-password':
+                        this.change_password_visible = true;
+                        break;
+                    case 'sign-out':
+                        window.location = "logout";
+                        break;
+                }
+            },
+            change_password: function () {
+                this.$refs.change_password_form.validate((ok, faild) => {
+                    if (!ok) return;
+                    let change_pswd_form = new URLSearchParams();
+                    change_pswd_form.append('pswd', this.change_password_form.password)
+                    change_pswd_form.append('pswd_new', this.change_password_form.new_password)
+                    axios({
+                        url: 'change_pswd',
+                        method: 'post',
+                        data: change_pswd_form
+                    }).then(() => {
+                        vm.$notify({type: 'success', title: '密码修改成功'});
+                        this.change_password_visible = false// 关闭对话框
+                    }).catch((error) =>
+                        vm.$notify.error({
+                            title: '修改密码失败',
+                            message: error.response ? error.response.data : '登录失败',
+                            duration: 0
+                        })
+                    );
+                })
+            }
+        }
+    })
+</script>
 </body>
 </html>
