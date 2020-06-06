@@ -19,7 +19,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("Username", user);
             resp.setStatus(204);
         } catch (Account.AccountException e) {
-            resp.setStatus(403);
+            resp.setStatus(401);
             resp.getWriter().print("登录失败：" + e.getMessage());
         } catch (Exception e) {
             resp.setStatus(500);

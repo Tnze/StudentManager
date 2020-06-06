@@ -10,7 +10,10 @@ public class LoginFilter extends HttpFilter {
     public void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpSession s = req.getSession();
         if (s.getAttribute("ID") == null) {
-            resp.sendRedirect("login.jsp");
+            if ("GET".equals(req.getMethod()))
+                resp.sendRedirect("login.jsp");
+            else
+                resp.sendError(401, "Please login first");
             return;
         }
         chain.doFilter(req, resp);

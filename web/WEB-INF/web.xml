@@ -43,4 +43,12 @@
         <servlet-name>SignUp</servlet-name>
         <url-pattern>/signup</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>Manager</servlet-name>
+        <servlet-class>ManageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Manager</servlet-name>
+        <url-pattern>/manager</url-pattern>
+    </servlet-mapping>
 </web-app>
