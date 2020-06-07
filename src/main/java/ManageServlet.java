@@ -1,19 +1,17 @@
-import com.mysql.cj.xdevapi.JsonArray;
-import com.mysql.cj.xdevapi.JsonValue;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ManageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         JSONObject ret = new JSONObject();
         try {
             String action = req.getParameter("action");
@@ -21,24 +19,35 @@ public class ManageServlet extends HttpServlet {
             switch (action) {
                 case "list" -> {
                     JSONArray list = new JSONArray();
-                    Manager.Student[] students = Manager.getList();
-                    for (Manager.Student s : students) {
+                    Manage.Student[] students = Manage.getList();
+                    for (Manage.Student s : students) {
                         JSONObject stu = new JSONObject();
-                        // TODO: setup fields
-                        list.put(stu);
+                        stu.put("id", s.id);
+                        stu.put("name", s.name);
+                        stu.put("gender", s.gender);
+                        stu.put("birthday", s.birthday.toString());
+                        stu.put("qq", s.qq);
+                        stu.put("phone", s.phone);
+                        stu.put("address", s.address);
+                        list.add(stu);
                     }
                     ret.put("list", list);
+                    resp.setStatus(200);
                 }
-                case "delete" -> resp.setStatus(501);
+                case "delete" -> {
+                    String stu = req.getParameter("student");
+                    if (stu == null) throw new Exception("Unknown which student");
+                    Manage.delete(stu);
+                }
                 default -> {
-                    resp.setStatus(400);
                     ret.put("err", "Unknown action");
+                    resp.setStatus(400);
                 }
             }
         } catch (Exception e) {
-            resp.setStatus(500);
-            System.err.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
             ret.put("err", e.getClass().getName());
+            resp.setStatus(500);
         } finally {
             resp.getWriter().write(ret.toString());
         }

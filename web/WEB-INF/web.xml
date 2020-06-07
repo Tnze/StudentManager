@@ -10,6 +10,10 @@
     <filter-mapping>
         <filter-name>Login</filter-name>
         <url-pattern>/index.jsp</url-pattern>
+        <url-pattern>/index.jsp</url-pattern>
+        <url-pattern>/change_pswd</url-pattern>
+        <url-pattern>/logout</url-pattern>
+        <url-pattern>/manager</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>Login</servlet-name>

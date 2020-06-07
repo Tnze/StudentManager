@@ -81,7 +81,7 @@
         <el-main>
             <el-row :gutter="10">
                 <el-col>
-                    <el-table :data="tableData" style="width: 100%">
+                    <el-table :data="tableData" :default-sort="{prop: 'id', order: 'ascending'}" style="width: 100%">
                         <el-table-column type="expand">
                             <template slot-scope="props">
                                 <el-form label-position="left" inline class="student-item-expand">
@@ -109,19 +109,22 @@
                                 </el-form>
                                 <el-button size="mini">Edit
                                 </el-button>
-                                <el-button size="mini" type="danger">Delete
+                                <el-button size="mini" type="danger" @click="delete_student(props.row)">Delete
                                 </el-button>
                             </template>
                         </el-table-column>
                         <el-table-column
+                                sortable
                                 prop="id"
                                 label="学号">
                         </el-table-column>
                         <el-table-column
+                                sortable
                                 prop="name"
                                 label="姓名">
                         </el-table-column>
                         <el-table-column
+                                sortable
                                 prop="gender"
                                 label="性别">
                         </el-table-column>
@@ -135,24 +138,24 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+    function obj_to_urlsp(data) {
+        let form = new URLSearchParams();
+        for (let it in data)
+            if (data.hasOwnProperty(it))
+                form.append(it, data[it])
+        return form
+    }
+
     let vm = new Vue({
         el: '#app',
-        data: function () {
+        data() {
             let validPswd2 = (rule, value, callback) => {
                 if (this.change_password_form.new_password !== value)
                     callback(new Error('两次输入密码不一致！'));
                 else callback();
             };
             return {
-                tableData: [{
-                    id: '12987123',
-                    name: 'Tnze',
-                    gender: '男',
-                    birthday: '2000年11月13日',
-                    address: '北京市东城区东华门街道劳动人民文化宫',
-                    qq: '1234567890',
-                    phone: '0123456789'
-                }],
+                tableData: [],
                 change_password_form: {
                     password: '',
                     new_password: '',
@@ -201,7 +204,58 @@
                         })
                     );
                 })
+            },
+            delete_student: function (stu) {
+                this.$confirm('此操作将删除学生' + stu.name + ', 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios({
+                        url: 'manager',
+                        method: 'post',
+                        transformRequest: [obj_to_urlsp],
+                        transformResponse: [(data) => JSON.parse(data)],
+                        data: {action: 'delete', student: stu.id}
+                    }).then((resp) => {
+                        if (resp.data.err)
+                            vm.$notify.error({title: '错误', message: resp.data.err, duration: 0});
+                        else this.update_list();
+                        this.$message({type: 'success', message: '删除成功!'})
+                    }).catch((error) => {
+                        vm.$notify.error({
+                            title: '错误', duration: 0,
+                            message: error.response.err ? error.response.err : '查询失败'
+                        });
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '删除操作已被用户取消'
+                    });
+                });
+            },
+            update_list: function () {
+                axios({
+                    url: 'manager',
+                    method: 'post',
+                    transformRequest: [obj_to_urlsp],
+                    transformResponse: [(data) => JSON.parse(data)],
+                    data: {action: 'list'}
+                }).then((resp) => {
+                    if (resp.data.err)
+                        vm.$notify.error({title: '错误', message: resp.data.err, duration: 0});
+                    else this.tableData = resp.data.list;
+                }).catch((error) => {
+                    vm.$notify.error({
+                        title: '错误', duration: 0,
+                        message: error.response.err ? error.response.err : '查询失败'
+                    });
+                });
             }
+        },
+        mounted() {
+            this.update_list();
         }
     })
 </script>
