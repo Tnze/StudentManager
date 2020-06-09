@@ -63,6 +63,13 @@
     		<el-button type="primary" @click="change_password">确 定</el-button>
   		</span>
     </el-dialog>
+    <el-dialog :title="edit_info_form.title" :visible.sync="edit_info_form.visible">
+        <el-form ref="editor" :model="edit_info_form.student" label-width="80px">
+            <el-form-item label="学号">
+                <el-input v-model="edit_info_form.student.id"></el-input>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
     <el-container>
         <el-header style="text-align: right">
             <span style="float: left; font-size: 20px;">学生信息管理系统</span>
@@ -106,8 +113,11 @@
                                     <el-form-item label="手机">
                                         <span>{{ props.row.phone }}</span>
                                     </el-form-item>
+                                    <el-form-item label="照片">
+                                        <el-image :src="'photo/?id='+props.row.id"></el-image>
+                                    </el-form-item>
                                 </el-form>
-                                <el-button size="mini">Edit
+                                <el-button size="mini" @click="edit_student(props.row)">Edit
                                 </el-button>
                                 <el-button size="mini" type="danger" @click="delete_student(props.row)">Delete
                                 </el-button>
@@ -160,6 +170,11 @@
                     password: '',
                     new_password: '',
                     check_new_password: ''
+                },
+                edit_info_form: {
+                    student: {id:'',name:'',gender:''},
+                    title: '编辑学生信息',
+                    visible: false,
                 },
                 change_password_form_rules: {
                     password: [{required: true, message: '请输入旧密码'}],
@@ -234,6 +249,10 @@
                         message: '删除操作已被用户取消'
                     });
                 });
+            },
+            edit_student: function (stu) {
+                this.edit_info_form.student = stu;
+                this.edit_info_form.visible = true;
             },
             update_list: function () {
                 axios({

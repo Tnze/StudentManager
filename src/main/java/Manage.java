@@ -33,6 +33,24 @@ public class Manage {
         return ary.toArray(new Student[0]);
     }
 
+    public static void update(String id, Student s) throws NamingException, SQLException {
+        Context c = new InitialContext();
+        DataSource ds = (DataSource) c.lookup("java:comp/env/jdbc/students");
+        try (Connection conn = ds.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("UPDATE students SET Name = ?, Gender = ?, Birthday = ?, QQ = ?, Phone = ?, Address = ?, id = ? WHERE ID = ?")) {
+                stmt.setString(1, s.name);
+                stmt.setString(2, s.gender);
+                stmt.setDate(3, new java.sql.Date(s.birthday.getTime()));
+                stmt.setString(4, s.qq);
+                stmt.setString(5, s.phone);
+                stmt.setString(6, s.address);
+                stmt.setString(7, s.id);
+                stmt.setString(8, id);
+                stmt.execute();
+            }
+        }
+    }
+
     public static void delete(String id) throws NamingException, SQLException {
         Context c = new InitialContext();
         DataSource ds = (DataSource) c.lookup("java:comp/env/jdbc/students");

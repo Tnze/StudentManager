@@ -36,10 +36,11 @@
         </transition>
         <el-form ref="form" :rules="rules" :model="login_data">
             <el-form-item prop="username">
-                <el-input v-model="login_data.username" placeholder="用户名"></el-input>
+                <el-input v-model="login_data.username" placeholder="用户名" autofocus></el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <el-input v-model="login_data.password" placeholder="密码" show-password></el-input>
+                <el-input v-model="login_data.password"
+                          placeholder="密码" @keyup.enter.native="sign_in" show-password></el-input>
             </el-form-item>
             <el-button type="primary" @click="sign_in">登入</el-button>
         </el-form>

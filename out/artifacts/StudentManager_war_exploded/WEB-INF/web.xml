@@ -14,6 +14,7 @@
         <url-pattern>/change_pswd</url-pattern>
         <url-pattern>/logout</url-pattern>
         <url-pattern>/manager</url-pattern>
+        <url-pattern>/photo</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>Login</servlet-name>
@@ -54,5 +55,13 @@
     <servlet-mapping>
         <servlet-name>Manager</servlet-name>
         <url-pattern>/manager</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>Photo</servlet-name>
+        <servlet-class>Photo</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Photo</servlet-name>
+        <url-pattern>/photo</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -34,6 +34,12 @@ public class ManageServlet extends HttpServlet {
                     ret.put("list", list);
                     resp.setStatus(200);
                 }
+                case "update" -> {
+                    String data = req.getParameter("data");
+                    if (data == null) throw new Exception("Cannot read data");
+                    JSONObject stu = JSONObject.fromObject(data);
+                    Manage.update(stu.getString("id"), (Manage.Student) JSONObject.toBean(stu.getJSONObject("data"), Manage.Student.class));
+                }
                 case "delete" -> {
                     String stu = req.getParameter("student");
                     if (stu == null) throw new Exception("Unknown which student");
