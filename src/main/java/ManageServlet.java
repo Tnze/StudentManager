@@ -19,13 +19,13 @@ public class ManageServlet extends HttpServlet {
             switch (action) {
                 case "list" -> {
                     JSONArray list = new JSONArray();
-                    Manage.Student[] students = Manage.getList();
-                    for (Manage.Student s : students) {
+                    Student[] students = Manage.getList();
+                    for (Student s : students) {
                         JSONObject stu = new JSONObject();
                         stu.put("id", s.id);
                         stu.put("name", s.name);
                         stu.put("gender", s.gender);
-                        stu.put("birthday", s.birthday.toString());
+                        stu.put("birthday", s.birthday);
                         stu.put("qq", s.qq);
                         stu.put("phone", s.phone);
                         stu.put("address", s.address);
@@ -38,7 +38,8 @@ public class ManageServlet extends HttpServlet {
                     String data = req.getParameter("data");
                     if (data == null) throw new Exception("Cannot read data");
                     JSONObject stu = JSONObject.fromObject(data);
-                    Manage.update(stu.getString("id"), (Manage.Student) JSONObject.toBean(stu.getJSONObject("data"), Manage.Student.class));
+                    Student s = (Student) JSONObject.toBean(stu, Student.class);
+                    Manage.update(req.getParameter("id"), s);
                 }
                 case "delete" -> {
                     String stu = req.getParameter("student");

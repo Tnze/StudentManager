@@ -4,8 +4,10 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="1">
+          <list size="3">
             <item index="0" class="java.lang.String" itemvalue="slot-scope" />
+            <item index="1" class="java.lang.String" itemvalue="v-if" />
+            <item index="2" class="java.lang.String" itemvalue="v-else" />
           </list>
         </value>
       </option>
@@ -14,7 +16,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="30">
+          <list size="33">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -45,6 +47,9 @@
             <item index="27" class="java.lang.String" itemvalue="el-dialog" />
             <item index="28" class="java.lang.String" itemvalue="el-popover" />
             <item index="29" class="java.lang.String" itemvalue="el-image" />
+            <item index="30" class="java.lang.String" itemvalue="el-radio" />
+            <item index="31" class="java.lang.String" itemvalue="el-date-picker" />
+            <item index="32" class="java.lang.String" itemvalue="el-upload" />
           </list>
         </value>
       </option>

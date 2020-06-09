@@ -39,6 +39,33 @@
             margin-bottom: 0;
             width: 50%;
         }
+
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-uploader .el-upload:hover {
+            border-color: #409EFF;
+        }
+
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +95,45 @@
             <el-form-item label="学号">
                 <el-input v-model="edit_info_form.student.id"></el-input>
             </el-form-item>
+            <el-form-item label="姓名">
+                <el-input v-model="edit_info_form.student.name"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-radio v-model="edit_info_form.student.gender" :label="0">未知</el-radio>
+                <el-radio v-model="edit_info_form.student.gender" :label="1">男</el-radio>
+                <el-radio v-model="edit_info_form.student.gender" :label="2">女</el-radio>
+            </el-form-item>
+            <el-form-item label="生日">
+                <el-date-picker
+                        v-model="edit_info_form.student.birthday"
+                        type="date" format="yyyy 年 MM 月 dd 日"
+                        value-format="timestamp"
+                        placeholder="选择日期">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="地址">
+                <el-input
+                        type="textarea"
+                        autosize
+                        v-model="edit_info_form.student.address">
+                </el-input>
+            </el-form-item>
+            <el-form-item label="QQ">
+                <el-input v-model="edit_info_form.student.qq"></el-input>
+            </el-form-item>
+            <el-form-item label="手机">
+                <el-input v-model="edit_info_form.student.phone"></el-input>
+            </el-form-item>
+            <el-form-item label="照片">
+                <el-upload
+                        class="avatar-uploader"
+                        action="photo"
+                        :show-file-list="false">
+                </el-upload>
+            </el-form-item>
         </el-form>
+        <el-button @click="edit_info_form.visible = false">取 消</el-button>
+        <el-button type="primary" @click="edit_student_confirmed">确 定</el-button>
     </el-dialog>
     <el-container>
         <el-header style="text-align: right">
@@ -99,10 +164,10 @@
                                         <span>{{ props.row.name }}</span>
                                     </el-form-item>
                                     <el-form-item label="性别">
-                                        <span>{{ props.row.gender }}</span>
+                                        <span>{{ ['未知','男','女'][props.row.gender] }}</span>
                                     </el-form-item>
                                     <el-form-item label="出生日期">
-                                        <span>{{ props.row.birthday }}</span>
+                                        <span>{{ display_birthday(props.row.birthday) }}</span>
                                     </el-form-item>
                                     <el-form-item label="住址">
                                         <span>{{ props.row.address }}</span>
@@ -135,8 +200,8 @@
                         </el-table-column>
                         <el-table-column
                                 sortable
-                                prop="gender"
-                                label="性别">
+                                prop="phone"
+                                label="手机">
                         </el-table-column>
                     </el-table>
                 </el-col>
@@ -148,6 +213,7 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
     function obj_to_urlsp(data) {
         let form = new URLSearchParams();
         for (let it in data)
@@ -172,7 +238,8 @@
                     check_new_password: ''
                 },
                 edit_info_form: {
-                    student: {id:'',name:'',gender:''},
+                    student: {},
+                    id: undefined,
                     title: '编辑学生信息',
                     visible: false,
                 },
@@ -188,6 +255,10 @@
             }
         },
         methods: {
+            display_birthday: function (birth) {
+                let d = new Date(birth);
+                return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDay();
+            },
             account_profile: function (cmd) {
                 switch (cmd) {
                     case 'change-password':
@@ -201,13 +272,14 @@
             change_password: function () {
                 this.$refs.change_password_form.validate((ok, faild) => {
                     if (!ok) return;
-                    let change_pswd_form = new URLSearchParams();
-                    change_pswd_form.append('pswd', this.change_password_form.password)
-                    change_pswd_form.append('pswd_new', this.change_password_form.new_password)
                     axios({
                         url: 'change_pswd',
                         method: 'post',
-                        data: change_pswd_form
+                        transformRequest: [obj_to_urlsp],
+                        data: {
+                            pswd: this.change_password_form.password,
+                            pswd_new: this.change_password_form.new_password
+                        }
                     }).then(() => {
                         vm.$notify({type: 'success', title: '密码修改成功'});
                         this.change_password_visible = false// 关闭对话框
@@ -251,8 +323,38 @@
                 });
             },
             edit_student: function (stu) {
-                this.edit_info_form.student = stu;
+                this.edit_info_form.student = {
+                    id: stu.id, name: stu.name, gender: stu.gender,
+                    birthday: stu.birthday, address: stu.address,
+                    qq: stu.qq, phone: stu.phone,
+                };
+                this.edit_info_form.id = stu.id;
                 this.edit_info_form.visible = true;
+            },
+            edit_student_confirmed: function () {
+                this.$refs.editor.validate((ok, faild) => {
+                    if (!ok) return;
+                    axios({
+                        url: 'manager',
+                        method: 'post',
+                        transformRequest: [obj_to_urlsp],
+                        data: {
+                            action: 'update',
+                            id: this.edit_info_form.id,
+                            data: JSON.stringify(this.edit_info_form.student)
+                        }
+                    }).then(() => {
+                        this.update_list();
+                        vm.$notify({type: 'success', title: '更新成功'});
+                        this.edit_info_form.visible = false;
+                    }).catch((error) =>
+                        vm.$notify.error({
+                            title: '失败',
+                            message: error.response ? error.response.data : '更新失败',
+                            duration: 0
+                        })
+                    );
+                })
             },
             update_list: function () {
                 axios({

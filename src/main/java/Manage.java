@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.LinkedList;
 
 public class Manage {
@@ -20,8 +19,8 @@ public class Manage {
                 while (rows.next()) {
                     Student s = new Student();
                     s.name = rows.getString("Name");
-                    s.gender = rows.getString("Gender");
-                    s.birthday = rows.getDate("Birthday");
+                    s.gender = rows.getInt("Gender");
+                    s.birthday = rows.getLong("Birthday");
                     s.qq = rows.getString("QQ");
                     s.phone = rows.getString("Phone");
                     s.address = rows.getString("Address");
@@ -39,8 +38,8 @@ public class Manage {
         try (Connection conn = ds.getConnection()) {
             try (PreparedStatement stmt = conn.prepareStatement("UPDATE students SET Name = ?, Gender = ?, Birthday = ?, QQ = ?, Phone = ?, Address = ?, id = ? WHERE ID = ?")) {
                 stmt.setString(1, s.name);
-                stmt.setString(2, s.gender);
-                stmt.setDate(3, new java.sql.Date(s.birthday.getTime()));
+                stmt.setInt(2, s.gender);
+                stmt.setLong(3, s.birthday);
                 stmt.setString(4, s.qq);
                 stmt.setString(5, s.phone);
                 stmt.setString(6, s.address);
@@ -60,11 +59,5 @@ public class Manage {
                 stmt.execute();
             }
         }
-    }
-
-    static class Student {
-        public String name, gender;
-        public Date birthday;
-        public String id, qq, phone, address;
     }
 }
