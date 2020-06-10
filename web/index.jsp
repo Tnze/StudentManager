@@ -128,7 +128,9 @@
                 <el-upload
                         class="avatar-uploader"
                         action="photo"
+                        :data="{id:edit_info_form.student.id}"
                         :show-file-list="false">
+                    <i class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
             </el-form-item>
         </el-form>
@@ -185,7 +187,7 @@
                                         <span>{{ props.row.phone }}</span>
                                     </el-form-item>
                                     <el-form-item label="照片">
-                                        <el-image :src="'photo/?id='+props.row.id"></el-image>
+                                        <el-image class="avatar" :src="'photo/?id='+props.row.id"></el-image>
                                     </el-form-item>
                                 </el-form>
                                 <el-button size="mini" @click="edit_student(props.row)">Edit

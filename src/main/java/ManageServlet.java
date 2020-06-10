@@ -11,6 +11,7 @@ public class ManageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
+        req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         JSONObject ret = new JSONObject();
         try {

@@ -58,7 +58,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>Photo</servlet-name>
-        <servlet-class>Photo</servlet-class>
+        <servlet-class>PhotoServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Photo</servlet-name>

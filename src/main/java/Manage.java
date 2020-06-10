@@ -2,6 +2,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,6 +46,18 @@ public class Manage {
                 stmt.setString(6, s.address);
                 stmt.setString(7, s.id);
                 stmt.setString(8, id);
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    public static void photo(String id, InputStream photo) throws NamingException, SQLException {
+        Context c = new InitialContext();
+        DataSource ds = (DataSource) c.lookup("java:comp/env/jdbc/students");
+        try (Connection conn = ds.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("UPDATE students SET Photo = ? WHERE ID = ?")) {
+                stmt.setBlob(1, photo);
+                stmt.setString(2, id);
                 stmt.executeUpdate();
             }
         }
