@@ -45,6 +45,23 @@ public class Manage {
                 stmt.setString(6, s.address);
                 stmt.setString(7, s.id);
                 stmt.setString(8, id);
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    public static void add(Student s) throws NamingException, SQLException {
+        Context c = new InitialContext();
+        DataSource ds = (DataSource) c.lookup("java:comp/env/jdbc/students");
+        try (Connection conn = ds.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO students (Name,Gender,Birthday,QQ,Phone,Address,id) VALUES (?,?,?,?,?,?,?)")) {
+                stmt.setString(1, s.name);
+                stmt.setInt(2, s.gender);
+                stmt.setLong(3, s.birthday);
+                stmt.setString(4, s.qq);
+                stmt.setString(5, s.phone);
+                stmt.setString(6, s.address);
+                stmt.setString(7, s.id);
                 stmt.execute();
             }
         }

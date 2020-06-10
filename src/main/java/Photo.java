@@ -30,7 +30,7 @@ public class Photo extends HttpServlet {
                             resp.setContentType("image/png");
                             photo.getBinaryStream().transferTo(resp.getOutputStream());
                             resp.setStatus(200);
-                        }
+                        } else resp.setStatus(204);
                     }
                     resp.sendError(404);
                 }

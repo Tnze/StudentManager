@@ -62,6 +62,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Photo</servlet-name>
-        <url-pattern>/photo</url-pattern>
+        <url-pattern>/photo/*</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -34,12 +34,13 @@ public class ManageServlet extends HttpServlet {
                     ret.put("list", list);
                     resp.setStatus(200);
                 }
-                case "update" -> {
+                case "update", "add" -> {
                     String data = req.getParameter("data");
                     if (data == null) throw new Exception("Cannot read data");
                     JSONObject stu = JSONObject.fromObject(data);
                     Student s = (Student) JSONObject.toBean(stu, Student.class);
-                    Manage.update(req.getParameter("id"), s);
+                    if ("add".equals(action)) Manage.add(s);
+                    else Manage.update(req.getParameter("id"), s);
                 }
                 case "delete" -> {
                     String stu = req.getParameter("student");

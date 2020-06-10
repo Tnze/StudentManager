@@ -153,8 +153,14 @@
         <el-main>
             <el-row :gutter="10">
                 <el-col>
-                    <el-table :data="tableData" :default-sort="{prop: 'id', order: 'ascending'}" style="width: 100%">
-                        <el-table-column type="expand">
+                    <el-table
+                            :data="filter_formData"
+                            :default-sort="{prop: 'id', order: 'ascending'}" style="width: 100%">
+                        <el-table-column type="expand" width="80">
+                            <template slot="header" slot-scope="scope">
+                                <el-button slot="append" type="primary" size="mini" icon="el-icon-plus"
+                                           @click="add_student"></el-button>
+                            </template>
                             <template slot-scope="props">
                                 <el-form label-position="left" inline class="student-item-expand">
                                     <el-form-item label="学号">
@@ -167,7 +173,7 @@
                                         <span>{{ ['未知','男','女'][props.row.gender] }}</span>
                                     </el-form-item>
                                     <el-form-item label="出生日期">
-                                        <span>{{ display_birthday(props.row.birthday) }}</span>
+                                        <span>{{ new Date(props.row.birthday).toLocaleDateString() }}</span>
                                     </el-form-item>
                                     <el-form-item label="住址">
                                         <span>{{ props.row.address }}</span>
@@ -203,6 +209,15 @@
                                 prop="phone"
                                 label="手机">
                         </el-table-column>
+                        <el-table-column
+                                align="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-input
+                                        v-model="search_tableData"
+                                        size="mini"
+                                        placeholder="输入关键字搜索"></el-input>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </el-col>
             </el-row>
@@ -214,6 +229,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+
     function obj_to_urlsp(data) {
         let form = new URLSearchParams();
         for (let it in data)
@@ -231,6 +247,7 @@
                 else callback();
             };
             return {
+                search_tableData: '',
                 tableData: [],
                 change_password_form: {
                     password: '',
@@ -239,8 +256,9 @@
                 },
                 edit_info_form: {
                     student: {},
+                    method: '',
                     id: undefined,
-                    title: '编辑学生信息',
+                    title: '',
                     visible: false,
                 },
                 change_password_form_rules: {
@@ -254,11 +272,19 @@
                 change_password_visible: false
             }
         },
+        computed: {
+            // 计算属性的 getter
+            filter_formData: function () {
+                let search = this.search_tableData;
+                return this.tableData.filter(data =>
+                    !this.search_tableData ||
+                    data.id.includes(search) ||                               // 学号
+                    data.name.toLowerCase().includes(search.toLowerCase()) || // 姓名
+                    data.phone.includes(search)                               // 手机
+                );
+            }
+        },
         methods: {
-            display_birthday: function (birth) {
-                let d = new Date(birth);
-                return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDay();
-            },
             account_profile: function (cmd) {
                 switch (cmd) {
                     case 'change-password':
@@ -322,7 +348,16 @@
                     });
                 });
             },
+            add_student: function () {
+                this.edit_info_form.title = '添加学生信息';
+                this.edit_info_form.method = 'add';
+                this.edit_info_form.student = {};
+                this.edit_info_form.id = '';
+                this.edit_info_form.visible = true;
+            },
             edit_student: function (stu) {
+                this.edit_info_form.title = '编辑学生信息';
+                this.edit_info_form.method = 'update';
                 this.edit_info_form.student = {
                     id: stu.id, name: stu.name, gender: stu.gender,
                     birthday: stu.birthday, address: stu.address,
@@ -338,8 +373,9 @@
                         url: 'manager',
                         method: 'post',
                         transformRequest: [obj_to_urlsp],
+                        transformResponse: [(data) => JSON.parse(data)],
                         data: {
-                            action: 'update',
+                            action: this.edit_info_form.method,
                             id: this.edit_info_form.id,
                             data: JSON.stringify(this.edit_info_form.student)
                         }
@@ -350,7 +386,7 @@
                     }).catch((error) =>
                         vm.$notify.error({
                             title: '失败',
-                            message: error.response ? error.response.data : '更新失败',
+                            message: error.response ? error.response.data.err : '更新失败',
                             duration: 0
                         })
                     );
