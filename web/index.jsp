@@ -257,7 +257,7 @@
         methods: {
             display_birthday: function (birth) {
                 let d = new Date(birth);
-                return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDay();
+                return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
             },
             account_profile: function (cmd) {
                 switch (cmd) {
