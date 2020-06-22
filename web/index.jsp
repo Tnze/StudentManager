@@ -208,6 +208,11 @@
                                 prop="phone"
                                 label="手机">
                         </el-table-column>
+                        <el-table-column align="right">
+                            <template slot="header" slot-scope="scope">
+                                <el-button size="mini" @click="update_list" class="el-icon-refresh"></el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column
                                 align="right">
                             <template slot="header" slot-scope="scope">
