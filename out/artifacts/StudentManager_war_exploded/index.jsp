@@ -124,15 +124,6 @@
             <el-form-item label="手机">
                 <el-input v-model="edit_info_form.student.phone"></el-input>
             </el-form-item>
-            <el-form-item label="照片">
-                <el-upload
-                        class="avatar-uploader"
-                        action="photo"
-                        :data="{id:edit_info_form.student.id}"
-                        :show-file-list="false">
-                    <i class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-            </el-form-item>
         </el-form>
         <el-button @click="edit_info_form.visible = false">取 消</el-button>
         <el-button type="primary" @click="edit_student_confirmed">确 定</el-button>
@@ -187,7 +178,13 @@
                                         <span>{{ props.row.phone }}</span>
                                     </el-form-item>
                                     <el-form-item label="照片">
-                                        <el-image class="avatar" :src="'photo/?id='+props.row.id"></el-image>
+                                        <el-upload
+                                                class="avatar-uploader"
+                                                action="photo"
+                                                :data="{id:props.row.id}"
+                                                :show-file-list="false">
+                                            <el-image class="avatar" :src="'photo/?id='+props.row.id"></el-image>
+                                        </el-upload>
                                     </el-form-item>
                                 </el-form>
                                 <el-button size="mini" @click="edit_student(props.row)">Edit
