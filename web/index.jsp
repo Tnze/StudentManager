@@ -91,7 +91,7 @@
   		</span>
     </el-dialog>
     <el-dialog :title="edit_info_form.title" :visible.sync="edit_info_form.visible">
-        <el-form ref="editor" :model="edit_info_form.student" label-width="80px">
+        <el-form ref="editor" :model="edit_info_form.student" :rules="edit_info_form_rules" label-width="80px">
             <el-form-item label="学号">
                 <el-input v-model="edit_info_form.student.id"></el-input>
             </el-form-item>
@@ -118,7 +118,7 @@
                         v-model="edit_info_form.student.address">
                 </el-input>
             </el-form-item>
-            <el-form-item label="QQ">
+            <el-form-item label="QQ" prop="qq">
                 <el-input v-model="edit_info_form.student.qq"></el-input>
             </el-form-item>
             <el-form-item label="手机">
@@ -264,6 +264,9 @@
                     id: undefined,
                     title: '',
                     visible: false,
+                },
+                edit_info_form_rules: {
+
                 },
                 change_password_form_rules: {
                     password: [{required: true, message: '请输入旧密码'}],
